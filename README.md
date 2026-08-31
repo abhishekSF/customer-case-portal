@@ -8,7 +8,7 @@ Public GitHub copy (Devpost / Vercel Hobby): https://github.com/abhishekSF/custo
 
 Origin remains the source of truth. GitHub is the public copy, not a replacement.
 
-This is an in-memory Case stub served at same-origin `/api/cases`. It is not a remote CRM demo.
+The durable host is Salesforce-backed: same-origin `/api/cases` on the server uses OAuth `client_credentials`. The browser never holds the client secret and never calls Salesforce REST.
 
 ## Run locally
 
@@ -24,6 +24,8 @@ npm test
 ```
 
 On load the page GETs `/api/cases/00001001` and shows Case Number, Status, Last Modified, Owner, Subject, and Description.
+
+Local `npm start` uses an in-memory Case stub when those host credentials are absent. That local stub is not the live host.
 
 ## WebMCP tools
 
@@ -44,16 +46,11 @@ Both tools call same-origin `/api/cases/...` from the page. They do not call a t
 
 Try in ChatGPT’s browser: open the live URL, ask it to read Case 00001001, then file a Case about a leaking indoor unit after the last visit.
 
-## Same-origin API (stub)
+## Same-origin API
 
-- `GET /api/cases/:caseNumber` → `getCaseStatus`. Seed `00001001` is Closed, subject “Performance inadequate for second consecutive week”. Unknown numbers return `404 { "error": "CASE_NOT_FOUND" }`.
-- `POST /api/cases` with `{ "subject", "description" }` → `createCase`. Response is a **new** `{ "caseNumber" }` (never reused `00001001`). Stored Status is `New`, Origin is `Web`. Demo create: AC unit still leaking after a visit.
+On the live URL, `GET /api/cases/:caseNumber` and `POST /api/cases` run on the server against Salesforce. Case `00001001` is a real Salesforce Case. Unknown numbers return `404 { "error": "CASE_NOT_FOUND" }`. `POST /api/cases` with `{ "subject", "description" }` returns a **new** `{ "caseNumber" }` (never reused `00001001`). Stored Status is `New`, Origin is `Web`.
 
-Until host env is set, this store lives in process memory.
-
-`npm start` serves the page and `/api/cases` together (default `http://127.0.0.1:43147`). The live URL above is that same process over HTTPS.
-
-The `/api/cases` handlers already branch on the host: if `SF_LOGIN_URL`, `SF_CLIENT_ID`, and `SF_CLIENT_SECRET` are all set, they use server-side OAuth `client_credentials` (API v64.0). Otherwise they use the stub. Those values are never read from the repo or the browser.
+`npm start` serves the page and `/api/cases` together (default `http://127.0.0.1:43147`). Without host credentials that local process uses the in-memory stub, including seed Case `00001001` (Closed, subject “Performance inadequate for second consecutive week”).
 
 ## License
 
