@@ -21,6 +21,25 @@ test("GET /api/cases/00001001 returns the seed Case", async () => {
   );
 });
 
+test("GET /api/cases returns recent Cases including 00001001", async () => {
+  const response = await app().request("/api/cases");
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.ok(Array.isArray(body.cases));
+  assert.ok(body.cases.length > 1);
+  const seed = body.cases.find((row) => row.caseNumber === "00001001");
+  assert.ok(seed);
+  assert.equal(seed.status, "Closed");
+  assert.equal(seed.owner, "Priya Nair");
+  assert.equal(
+    seed.subject,
+    "Performance inadequate for second consecutive week",
+  );
+  const times = body.cases.map((row) => Date.parse(row.lastModified));
+  const sorted = [...times].sort((a, b) => b - a);
+  assert.deepEqual(times, sorted);
+});
+
 test("GET unknown Case returns CASE_NOT_FOUND", async () => {
   const response = await app().request("/api/cases/00001999");
   assert.equal(response.status, 404);

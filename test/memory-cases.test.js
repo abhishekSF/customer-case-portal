@@ -20,6 +20,16 @@ test("seed Case 00001001 is present with status fields", () => {
   assert.ok(record.description);
 });
 
+test("listCases returns more than the demo Case, newest first", () => {
+  const store = createMemoryCaseStore();
+  const cases = store.listCases();
+  assert.ok(cases.length > 1);
+  assert.ok(cases.some((row) => row.caseNumber === SEED_CASE_NUMBER));
+  const times = cases.map((row) => Date.parse(row.lastModified));
+  const sorted = [...times].sort((a, b) => b - a);
+  assert.deepEqual(times, sorted);
+});
+
 test("getCaseStatus throws CASE_NOT_FOUND on 0 rows", () => {
   const store = createMemoryCaseStore();
   assert.throws(() => store.getCaseStatus("00001999"), (error) => {

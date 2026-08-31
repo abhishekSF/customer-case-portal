@@ -17,6 +17,7 @@ test("page seeds Case 00001001 and registerTool uses the required shape", async 
   const app = await readPublic("app.js");
 
   assert.match(html, /00001001/);
+  assert.match(html, /My Cases/);
   assert.match(html, /Case Number/);
   assert.match(html, /customer Case portal/);
   assert.match(webmcp, /name: "getCaseStatus"/);
@@ -35,8 +36,20 @@ test("page seeds Case 00001001 and registerTool uses the required shape", async 
 
   assert.match(api, /fetch\(`\/api\/cases\/\$\{encodeURIComponent\(key\)\}`/);
   assert.match(api, /fetch\("\/api\/cases"/);
+  assert.match(app, /listCases/);
+  assert.doesNotMatch(webmcp, /name: "listCases"/);
   assert.doesNotMatch(api, /services\/data/);
   assert.doesNotMatch(api, /SF_CLIENT_SECRET/);
   assert.doesNotMatch(app, /SF_CLIENT_SECRET/);
   assert.doesNotMatch(webmcp, /SF_CLIENT_SECRET/);
+});
+
+test("server list query is a constant SOQL string", async () => {
+  const src = await readFile(path.join(root, "lib", "salesforce-cases.js"), "utf8");
+  assert.match(src, /const LIST_SOQL =/);
+  assert.match(
+    src,
+    /FROM Case ORDER BY LastModifiedDate DESC LIMIT 20/,
+  );
+  assert.match(src, /queryCase\(LIST_SOQL\)/);
 });

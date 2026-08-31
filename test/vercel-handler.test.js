@@ -51,3 +51,12 @@ test("Vercel getCaseStatus handler returns Closed Case 00001001", async () => {
     "Performance inadequate for second consecutive week",
   );
 });
+
+test("Vercel list handler returns { cases: [...] }", async () => {
+  const http = mock("GET", "/api/cases");
+  await runApi(http.req, http.res);
+  const out = http.result();
+  assert.equal(out.statusCode, 200);
+  assert.ok(Array.isArray(out.json.cases));
+  assert.ok(out.json.cases.some((row) => row.caseNumber === "00001001"));
+});

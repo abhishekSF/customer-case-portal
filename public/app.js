@@ -1,4 +1,4 @@
-import { createCase, getCaseStatus } from "./case-api.js";
+import { createCase, getCaseStatus, listCases } from "./case-api.js";
 import { registerCaseTools } from "./webmcp.js";
 
 const SEED = "00001001";
@@ -15,9 +15,12 @@ const fields = {
 const caseFields = document.getElementById("case-fields");
 const caseState = document.getElementById("case-state");
 const caseList = document.getElementById("case-list");
+const listEmpty = document.getElementById("list-empty");
 const statusLine = document.getElementById("webmcp-status");
 const form = document.getElementById("new-case-form");
+const lookupForm = document.getElementById("lookup-form");
 const formMessage = document.getElementById("form-message");
+const lookupMessage = document.getElementById("lookup-message");
 
 const sessionCases = new Map();
 let selectedNumber = null;
@@ -40,24 +43,37 @@ function remember(record) {
   sessionCases.set(record.caseNumber, record);
 }
 
+function listedCases() {
+  return [...sessionCases.values()].sort((a, b) => {
+    const tb = Date.parse(b.lastModified) || 0;
+    const ta = Date.parse(a.lastModified) || 0;
+    return tb - ta;
+  });
+}
+
 function renderList() {
   caseList.replaceChildren();
-  const numbers = [...sessionCases.keys()].sort();
-  for (const number of numbers) {
-    const record = sessionCases.get(number);
+  const records = listedCases();
+  listEmpty.hidden = records.length > 0;
+  listEmpty.textContent = records.length > 0 ? "" : "No Cases.";
+  for (const record of records) {
     const item = document.createElement("li");
     const button = document.createElement("button");
     button.type = "button";
-    button.dataset.caseNumber = number;
-    if (number === selectedNumber) {
+    button.dataset.caseNumber = record.caseNumber;
+    if (record.caseNumber === selectedNumber) {
       button.setAttribute("aria-current", "true");
     }
     const title = document.createElement("span");
+    title.className = "case-number";
     title.textContent = record.caseNumber;
+    const status = document.createElement("span");
+    status.className = "status";
+    status.textContent = record.status;
     const meta = document.createElement("span");
     meta.className = "meta";
-    meta.textContent = `${record.status} · ${record.subject || "No subject"}`;
-    button.append(title, meta);
+    meta.textContent = record.subject || "No subject";
+    button.append(title, status, meta);
     button.addEventListener("click", () => showCase(record));
     item.append(button);
     caseList.append(item);
@@ -91,27 +107,66 @@ function showError(message) {
   caseState.textContent = message;
 }
 
-function setFormMessage(text, kind) {
-  formMessage.textContent = text;
+function setMessage(el, text, kind) {
+  el.textContent = text;
   if (kind) {
-    formMessage.dataset.kind = kind;
+    el.dataset.kind = kind;
   } else {
-    delete formMessage.dataset.kind;
+    delete el.dataset.kind;
   }
 }
 
-async function loadSeed() {
+async function refreshList(signal) {
+  const cases = await listCases({ signal });
+  for (const record of cases) {
+    remember(record);
+  }
+  renderList();
+  return cases;
+}
+
+async function loadPage() {
   try {
-    const record = await getCaseStatus(SEED);
-    showCase(record);
-  } catch (error) {
-    showError(
-      error.code === "CASE_NOT_FOUND"
-        ? "Case 00001001 was not found."
-        : "Could not load Case 00001001.",
-    );
+    const cases = await refreshList();
+    const preferred =
+      sessionCases.get(SEED) ?? cases[0] ?? [...sessionCases.values()][0];
+    if (preferred) {
+      showCase(preferred);
+    } else {
+      listEmpty.hidden = false;
+      listEmpty.textContent = "No Cases.";
+      showError("No Cases.");
+    }
+  } catch {
+    listEmpty.hidden = false;
+    listEmpty.textContent = "Could not load Cases.";
+    showError("Could not load Cases.");
   }
 }
+
+lookupForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const caseNumber = document.getElementById("input-caseNumber").value;
+  const submit = lookupForm.querySelector("button[type='submit']");
+  submit.disabled = true;
+  setMessage(lookupMessage, "Looking up…");
+  try {
+    const record = await getCaseStatus(caseNumber);
+    remember(record);
+    showCase(record, "getCaseStatus");
+    setMessage(lookupMessage, `Showing Case ${record.caseNumber}.`, "ok");
+  } catch (error) {
+    setMessage(
+      lookupMessage,
+      error.code === "CASE_NOT_FOUND"
+        ? `Case ${String(caseNumber).trim()} was not found.`
+        : error.message || "Could not look up the Case.",
+      "error",
+    );
+  } finally {
+    submit.disabled = false;
+  }
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -119,21 +174,36 @@ form.addEventListener("submit", async (event) => {
   const description = document.getElementById("input-description").value;
   const submit = form.querySelector("button[type='submit']");
   submit.disabled = true;
-  setFormMessage("Filing Case…");
+  setMessage(formMessage, "Filing Case…");
   try {
     const created = await createCase({ subject, description });
+    try {
+      await refreshList();
+    } catch {
+      // Keep the filed Case on the page even if the list refresh fails.
+    }
     const record = await getCaseStatus(created.caseNumber);
     showCase(record, "createCase");
     form.reset();
-    setFormMessage(`Filed Case ${created.caseNumber}.`, "ok");
+    setMessage(formMessage, `Filed Case ${created.caseNumber}.`, "ok");
   } catch (error) {
-    setFormMessage(error.message || "Could not file the Case.", "error");
+    setMessage(formMessage, error.message || "Could not file the Case.", "error");
   } finally {
     submit.disabled = false;
   }
 });
 
-registerCaseTools(showCase)
+registerCaseTools(async (record, via) => {
+  remember(record);
+  if (via === "createCase") {
+    try {
+      await refreshList();
+    } catch {
+      // The new Case is already remembered.
+    }
+  }
+  showCase(record, via);
+})
   .then((result) => {
     if (result.ok) {
       statusLine.dataset.state = "ready";
@@ -148,4 +218,4 @@ registerCaseTools(showCase)
     statusLine.textContent = `Could not register tools: ${error.message}`;
   });
 
-loadSeed();
+loadPage();

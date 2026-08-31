@@ -69,7 +69,7 @@ export function toolDefinitions(onCaseShown) {
         const record = await getCaseStatus(input.caseNumber, {
           signal: options.signal,
         });
-        onCaseShown(record, "getCaseStatus");
+        await onCaseShown(record, "getCaseStatus");
         return statusResult(record);
       },
     },
@@ -104,7 +104,7 @@ export function toolDefinitions(onCaseShown) {
         const record = await getCaseStatus(created.caseNumber, {
           signal: options.signal,
         });
-        onCaseShown(record, "createCase");
+        await onCaseShown(record, "createCase");
         return { caseNumber: created.caseNumber };
       },
     },
