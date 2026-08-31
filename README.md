@@ -2,7 +2,11 @@
 
 One screen for Harbor Comfort customers. Keep it open. ChatGPT’s in-app browser (or Chrome 149+ with `chrome://flags/#enable-webmcp-testing`) can read Case **00001001** and file a new Case with the same two tools the page uses.
 
-**Live URL:** production Vercel Hobby URL is published after the public GitHub copy is imported (Origin remains the source of truth; GitHub is the public Devpost copy).
+**Live URL:** https://customer-case-portal.vercel.app
+
+Public GitHub copy (Devpost / Vercel Hobby): https://github.com/abhishekSF/customer-case-portal
+
+Origin remains the source of truth. GitHub is the public copy, not a replacement.
 
 This is an in-memory Case stub served at same-origin `/api/cases`. It is not a remote CRM demo.
 
