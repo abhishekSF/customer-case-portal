@@ -1,0 +1,20 @@
+{
+  "name": "customer-case-portal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "customer Case portal — one screen, two WebMCP tools, same-origin Case API",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.0",
+    "hono": "^4.9.0"
+  }
+}

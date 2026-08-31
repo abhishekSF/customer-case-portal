@@ -1,0 +1,4 @@
+{
+  "framework": null,
+  "buildCommand": "cp -a public/. ."
+}
