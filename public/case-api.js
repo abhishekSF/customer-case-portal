@@ -15,6 +15,28 @@ async function readBody(response) {
   }
 }
 
+export async function listCases(options = {}) {
+  const response = await fetch("/api/cases", {
+    signal: options.signal,
+    headers: { Accept: "application/json" },
+  });
+  const body = await readBody(response);
+  if (!response.ok) {
+    const error = new Error(body.error || "LIST_FAILED");
+    error.code = body.error || "LIST_FAILED";
+    throw error;
+  }
+  const rows = Array.isArray(body.cases) ? body.cases : [];
+  return rows.map((row) => ({
+    caseNumber: row.caseNumber,
+    status: row.status,
+    lastModified: row.lastModified,
+    owner: row.owner,
+    subject: row.subject ?? "",
+    description: row.description ?? "",
+  }));
+}
+
 export async function getCaseStatus(caseNumber, options = {}) {
   const key = String(caseNumber ?? "").trim();
   const response = await fetch(`/api/cases/${encodeURIComponent(key)}`, {
