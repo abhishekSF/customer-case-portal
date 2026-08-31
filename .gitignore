@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.local
+.env.*
+!.env.example
+*sf-webmcp.env
+*.pem
+.DS_Store
+*.log
+agent-tools/
+.vercel/
+.netlify/
+dist/
+.wrangler/
+.vercel

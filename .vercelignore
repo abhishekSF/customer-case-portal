@@ -1,0 +1,7 @@
+.vercel
+agent-tools
+.git
+node_modules
+*.log
+.env
+.env.local
