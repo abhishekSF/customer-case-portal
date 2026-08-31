@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Cases · customer Case portal</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <p class="eyebrow">Harbor Comfort</p>
+        <h1>customer Case portal</h1>
+        <p class="lede">
+          Keep this page open. You and your agent both work from the Case on
+          this screen.
+        </p>
+      </header>
+
+      <p id="webmcp-status" class="status-line" role="status">
+        Checking whether this browser can register Case tools…
+      </p>
+
+      <section class="panel" aria-labelledby="open-case-heading">
+        <h2 id="open-case-heading">Case</h2>
+        <p id="case-state" class="muted">Loading Case 00001001…</p>
+        <dl id="case-fields" class="fields" hidden>
+          <div>
+            <dt>Case Number</dt>
+            <dd id="field-caseNumber"></dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd id="field-status"></dd>
+          </div>
+          <div>
+            <dt>Last Modified</dt>
+            <dd id="field-lastModified"></dd>
+          </div>
+          <div>
+            <dt>Owner</dt>
+            <dd id="field-owner"></dd>
+          </div>
+          <div>
+            <dt>Subject</dt>
+            <dd id="field-subject"></dd>
+          </div>
+          <div>
+            <dt>Description</dt>
+            <dd id="field-description"></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel" aria-labelledby="session-heading">
+        <h2 id="session-heading">Cases this session</h2>
+        <ul id="case-list" class="case-list"></ul>
+      </section>
+
+      <section class="panel" aria-labelledby="new-case-heading">
+        <h2 id="new-case-heading">New Case</h2>
+        <p class="muted">
+          Same fields the agent sends to createCase. A typical new ticket is an
+          AC unit still leaking after a visit.
+        </p>
+        <form id="new-case-form">
+          <label>
+            Subject
+            <input
+              id="input-subject"
+              name="subject"
+              maxlength="255"
+              required
+              autocomplete="off"
+            />
+          </label>
+          <label>
+            Description
+            <textarea
+              id="input-description"
+              name="description"
+              rows="5"
+              required
+            ></textarea>
+          </label>
+          <button type="submit">File Case</button>
+          <p id="form-message" class="form-message" role="status"></p>
+        </form>
+      </section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
