@@ -23,7 +23,7 @@ Open http://127.0.0.1:43147
 npm test
 ```
 
-On load the page GETs `/api/cases`, then shows Case Number, Status, Last Modified, Owner, Subject, and Description for the selected Case.
+On load the page GETs `/api/cases`, then shows Case Number, Status, Last Modified, Owner, Subject, and Description for the selected Case. The screen is a Harbor Comfort ledger: serif Case numbers, a selected Case panel, Look up, and File Case.
 
 Local `npm start` uses an in-memory Case stub (several seed Cases, including 00001001) when those host credentials are absent. That local stub is not the live host.
 

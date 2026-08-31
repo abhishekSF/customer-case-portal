@@ -20,6 +20,9 @@ test("page seeds Case 00001001 and registerTool uses the required shape", async 
   assert.match(html, /My Cases/);
   assert.match(html, /Case Number/);
   assert.match(html, /customer Case portal/);
+  assert.match(html, /Fraunces/);
+  assert.match(html, /Bricolage\+Grotesque/);
+  assert.doesNotMatch(html, /Inter|Roboto|system-ui/);
   assert.match(webmcp, /name: "getCaseStatus"/);
   assert.match(webmcp, /00001001/);
   assert.match(webmcp, /name: "createCase"/);

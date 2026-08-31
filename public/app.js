@@ -12,6 +12,7 @@ const fields = {
   description: document.getElementById("field-description"),
 };
 
+const ticket = document.getElementById("ticket");
 const caseFields = document.getElementById("case-fields");
 const caseState = document.getElementById("case-state");
 const caseList = document.getElementById("case-list");
@@ -37,6 +38,20 @@ function formatLastModified(iso) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(date);
+}
+
+function statusKey(status) {
+  return String(status || "")
+    .trim()
+    .toLowerCase();
+}
+
+function makeChip(status) {
+  const chip = document.createElement("span");
+  chip.className = "chip";
+  chip.dataset.status = statusKey(status);
+  chip.textContent = status || "";
+  return chip;
 }
 
 function remember(record) {
@@ -67,17 +82,29 @@ function renderList() {
     const title = document.createElement("span");
     title.className = "case-number";
     title.textContent = record.caseNumber;
-    const status = document.createElement("span");
-    status.className = "status";
-    status.textContent = record.status;
+    const status = makeChip(record.status);
     const meta = document.createElement("span");
     meta.className = "meta";
     meta.textContent = record.subject || "No subject";
-    button.append(title, status, meta);
+    const when = document.createElement("span");
+    when.className = "when";
+    when.textContent = formatLastModified(record.lastModified);
+    button.append(title, status, when, meta);
     button.addEventListener("click", () => showCase(record));
     item.append(button);
     caseList.append(item);
   }
+  const selected = caseList.querySelector('button[aria-current="true"]');
+  selected?.scrollIntoView({ block: "nearest" });
+}
+
+function flashTicket() {
+  ticket.classList.remove("is-in");
+  ticket.classList.add("is-prep");
+  requestAnimationFrame(() => {
+    ticket.classList.remove("is-prep");
+    ticket.classList.add("is-in");
+  });
 }
 
 function showCase(record, via) {
@@ -86,11 +113,12 @@ function showCase(record, via) {
   caseState.hidden = true;
   caseFields.hidden = false;
   fields.caseNumber.textContent = record.caseNumber;
-  fields.status.textContent = record.status;
+  fields.status.replaceChildren(makeChip(record.status));
   fields.lastModified.textContent = formatLastModified(record.lastModified);
   fields.owner.textContent = record.owner;
   fields.subject.textContent = record.subject || "—";
   fields.description.textContent = record.description || "—";
+  flashTicket();
   renderList();
   if (via) {
     caseState.hidden = false;
@@ -207,7 +235,7 @@ registerCaseTools(async (record, via) => {
   .then((result) => {
     if (result.ok) {
       statusLine.dataset.state = "ready";
-      statusLine.textContent = `Tools registered with ${result.source}: ${result.tools.join(", ")}.`;
+      statusLine.textContent = `getCaseStatus + createCase · ${result.source}`;
     } else {
       statusLine.dataset.state = "missing";
       statusLine.textContent = result.reason;
