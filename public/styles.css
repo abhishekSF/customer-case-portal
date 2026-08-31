@@ -1,0 +1,216 @@
+:root {
+  color-scheme: light;
+  --ink: #1c1917;
+  --muted: #57534e;
+  --line: #d6d3d1;
+  --paper: #fafaf9;
+  --panel: #ffffff;
+  --accent: #292524;
+  --focus: #1d4e89;
+  --danger: #9f1239;
+  --ok: #166534;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", "Source Sans 3", "Segoe UI", sans-serif;
+  line-height: 1.45;
+}
+
+.page {
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.masthead h1 {
+  margin: 0.15rem 0 0.4rem;
+  font-size: 1.55rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lede,
+.muted {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.status-line {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  background: #f5f5f4;
+  font-size: 0.9rem;
+}
+
+.status-line[data-state="ready"] {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: var(--ok);
+}
+
+.status-line[data-state="missing"] {
+  border-color: #fde68a;
+  background: #fffbeb;
+  color: #854d0e;
+}
+
+.status-line[data-state="error"] {
+  border-color: #fecdd3;
+  background: #fff1f2;
+  color: var(--danger);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 1rem 1rem 1.1rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.fields {
+  margin: 0.75rem 0 0;
+}
+
+.fields > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.fields dt {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.fields dd {
+  margin: 0;
+  font-size: 1rem;
+  white-space: pre-wrap;
+}
+
+.case-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.case-list li {
+  border-top: 1px solid var(--line);
+}
+
+.case-list button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 0.7rem 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.case-list button[aria-current="true"] {
+  font-weight: 650;
+}
+
+.case-list .meta {
+  display: block;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+input,
+textarea,
+button[type="submit"] {
+  font: inherit;
+  color: var(--ink);
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  padding: 0.5rem 0.6rem;
+  background: #fff;
+}
+
+input:focus,
+textarea:focus,
+button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+
+button[type="submit"] {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form-message {
+  min-height: 1.2em;
+  margin: 0.6rem 0 0;
+  font-size: 0.9rem;
+}
+
+.form-message[data-kind="error"] {
+  color: var(--danger);
+}
+
+.form-message[data-kind="ok"] {
+  color: var(--ok);
+}
+
+@media (min-width: 720px) {
+  .page {
+    padding-top: 2.25rem;
+  }
+}
