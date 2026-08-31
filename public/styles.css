@@ -135,20 +135,41 @@ body {
   text-align: left;
   border: 0;
   background: transparent;
-  padding: 0.7rem 0;
+  padding: 0.7rem 0.15rem;
   font: inherit;
   cursor: pointer;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.55rem;
+  row-gap: 0.1rem;
 }
 
 .case-list button[aria-current="true"] {
+  background: #f5f5f4;
+  box-shadow: inset 3px 0 0 var(--accent);
+  padding-left: 0.55rem;
+}
+
+.case-list .case-number {
+  font-variant-numeric: tabular-nums;
   font-weight: 650;
 }
 
+.case-list .status {
+  justify-self: end;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 .case-list .meta {
-  display: block;
+  grid-column: 1 / -1;
   color: var(--muted);
   font-size: 0.85rem;
   font-weight: 400;
+}
+
+#list-empty:not([hidden]) + .case-list:empty {
+  display: none;
 }
 
 label {
